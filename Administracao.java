@@ -28,7 +28,6 @@ class Conta
     public void setSaldo(double valor) {
         this.saldo = valor;
     }
-    
 }
 
 public class Administracao extends UnicastRemoteObject implements AgenciaInterface, CaixaInterface
