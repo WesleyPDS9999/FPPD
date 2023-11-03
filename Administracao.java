@@ -1,5 +1,6 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 class Conta 
 {
@@ -32,63 +33,62 @@ class Conta
 
 public class Administracao extends UnicastRemoteObject implements AgenciaInterface, CaixaInterface
 {
-    private Conta[] contas;
+    private ArrayList<Conta> contas;
 
     public Administracao() throws RemoteException{
-        this.contas = new Conta[]{
-                new Conta(000,"Wesley"),
-                new Conta(001,"Lucca"),
-                new Conta(002,"Erik"),
-                new Conta(003,"Gabriel")
-        };
+        this.contas = new ArrayList<>();
+                contas.add(new Conta(000,"Wesley"));
+                contas.add(new Conta(001,"Lucca"));
+                contas.add(new Conta(002,"Erik"));
+                contas.add(new Conta(003,"Gabriel"));
     }
 
-    public void sacar(String nome, double valor) {
-        for(int i = 0; i < contas.length; i++){
-            if (contas[i].getNome() == nome) {
-                if(valor < contas[i].getSaldo()){
-                    contas[i].setSaldo(contas[i].getSaldo() - valor);
+    public void sacar(String nome, double valor) throws RemoteException {
+        for(int i = 0; i < contas.size(); i++){
+            if (contas.get(i).nome.equals(nome)) {
+                if(valor < contas.get(i).getSaldo()){
+                    contas.get(i).setSaldo(contas.get(i).getSaldo() - valor);
                 }
             }
         }
     }
 
-    public void depositar(String nome, double valor) {
-        for(int i = 0; i < contas.length; i++){
-            if (contas[i].getNome() == nome) {
-                contas[i].setSaldo(contas[i].getSaldo()+ valor);
+    public void depositar(String nome, double valor) throws RemoteException {
+        for(int i = 0; i < contas.size(); i++){
+            if (contas.get(i).nome.equals(nome)) {
+                contas.get(i).setSaldo(contas.get(i).getSaldo()+ valor);
             }
         }
     }
 
-    public boolean autenticarConta(Conta conta) {
-        for (int i = 0; i < contas.length; i++) {
-            if (contas[i].equals(conta.getNome()) && contas[i].equals(conta.getNroConta())) {
+    public boolean autenticarConta(String nome, int nConta) throws RemoteException {
+        for (int i = 0; i < contas.size(); i++) {
+            if (contas.get(i).nome.equals(nome) && contas.get(i).nroConta == nConta) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean solicitaAbrirConta(String nome, int nroConta) {
-        new Conta(nroConta, nome);
+    public boolean solicitaAbrirConta(String nome, int nroConta) throws RemoteException {
+        contas.add(new Conta(nroConta, nome));
         return true;
     }
 
-    public boolean solicitaFecharConta(String nome) {
-        for(int i = 0; i < contas.length; i++){
-            if (contas[i].getNome() == nome) {
-                contas[i] = null;
+    public boolean solicitaFecharConta(String nome) throws RemoteException {
+        for(int i = 0; i < contas.size(); i++){
+            if (contas.get(i).nome.equals(nome)) {
+                contas.remove(contas.get(i));
                 return true;
             }
         }
         return false;
     }
 
-    public double consultarSaldo(String n) throws RemoteException {
-        for(int i = 0; i < contas.length; i++){
-            if (contas[i].nome.equals(n)) {
-                return contas[i].getSaldo();
+    public double consultarSaldo(String nome) throws RemoteException {
+        for(int i = 0; i < contas.size(); i++){
+            if (contas.get(i).nome.equals(nome)) {
+                return contas.get(i).getSaldo();
             }
         }
         return -1;
