@@ -4,14 +4,13 @@ import java.util.InputMismatchException;
 
 public class AgenciaClient {
 	public static void main (String[] args) {
-		double saldo;
 		Scanner sc = new Scanner(System.in);
 
 		if	(args.length != 1)  {
 			System.out.println("Uso: java AgenciaClient <maquina>");
 			System.exit(1);
 		}
-		try {//criar interface com o usuario, para acessar os outros metodos
+		try {
 			AgenciaInterface conta = (AgenciaInterface) Naming.lookup ("//"+args[0]+"/Agencias");
 			while (true)    {
 				System.out.println("\n----------");
@@ -39,7 +38,7 @@ public class AgenciaClient {
 						case 2:
 							System.out.println("\nInforme seu nome:");
 							String n = sc.next();
-							System.out.println("\nInforme um número de identificação para sua nova conta:");
+							System.out.println("\nInforme um número de identificação da sua conta:");
 							int nConta = sc.nextInt();
 							if(conta.autenticarConta(n, nConta)){
 								System.out.println("\nConta autenticada com sucesso.");
@@ -50,31 +49,49 @@ public class AgenciaClient {
 						case 3:
 							System.out.println("\nInforme seu nome:");
 							String n2 = sc.next();
-							System.out.println("\nSeu saldo é de: R$" + conta.consultarSaldo(n2));
+							if(conta.consultarSaldo(n2) == -1){
+								System.out.println("\nConta inválida");
+							}else{
+								System.out.printf("%nSeu saldo é de: R$ %.2f %n" , conta.consultarSaldo(n2));
+							}
 							break;
 						case 4:
 							System.out.println("\nInforme seu nome:");
 							String n3 = sc.next();
-							System.out.println("\nInforme o valor desejado para o saque:");
-							double valor = sc.nextDouble();
-							if(conta.consultarSaldo(n3) > valor){
-								conta.sacar(n3, valor);
+							if(conta.consultarSaldo(n3) == -1){
+								System.out.println("\nConta inválida");
 							}else{
-								System.out.println("Saldo insuficiente.");
+								System.out.println("\nInforme o valor desejado para o saque:");
+								double valor = sc.nextDouble();
+								if(conta.consultarSaldo(n3) >= valor){
+									conta.sacar(n3, valor);
+									System.out.println("\nSaque concluído com sucesso.");
+								}else{
+									System.out.println("Saldo insuficiente.");
+								}
 							}
 							break;
 						case 5:
 							System.out.println("\nInforme seu nome:");
 							String n4 = sc.next();
-							System.out.println("\nInforme o valor desejado para o deposito:");
-							double valor1 = sc.nextDouble();
-							conta.depositar(n4, valor1);
+							if(conta.consultarSaldo(n4) == -1){
+								System.out.println("\nConta inválida");
+							}else{
+								System.out.println("\nInforme o valor desejado para o deposito:");
+								double valor1 = sc.nextDouble();
+								conta.depositar(n4, valor1);
+								System.out.println("\nDepósito concluído com sucesso.");
+							}
 							break;
 						case 6:
 							System.out.println("\nInforme seu nome:");
 							String n5 = sc.next();
 							conta.solicitaFecharConta(n5);
-							System.out.println("\nConta encerrada com sucesso.");
+							if(conta.solicitaFecharConta(n5) == false){
+								System.out.println("\nConta inválida");
+							}else{
+								System.out.println("\nConta encerrada com sucesso.");
+							}
 							break;
 						case 7:
 							sc.close();
